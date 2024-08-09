@@ -7,25 +7,31 @@ def emotion_detector(text_to_analyze):
 
     result = requests.post(url, json = myobj, headers = header)
 
-    formatted_response = json.loads(result.text)
-
-    emotions = formatted_response['emotionPredictions'][0]
-
-    anger = emotions['emotion']['anger']
-    disgust = emotions['emotion']['disgust']
-    fear = emotions['emotion']['fear']
-    joy = emotions['emotion']['joy']
-    sadness = emotions['emotion']['sadness']
-
-    emotions_dict = {
-        'anger': anger,
-        'disgust': disgust,
-        'fear': fear,
-        'joy': joy,
-        'sadness': sadness
-    }
-
-    max_tmp = max(emotions_dict, key=emotions_dict.get)
-    emotions_dict['dominant_emotion'] = max_tmp
-
+    if result.status_code == 400:
+        emotions_dict = {
+            'anger': 'None',
+            'disgust': 'None',
+            'fear': 'None',
+            'joy': 'None',
+            'sadness': 'None',
+            'dominant_emotion': 'None'
+        }
+    else:
+        formatted_response = json.loads(result.text)
+        emotions = formatted_response['emotionPredictions'][0]
+        anger = emotions['emotion']['anger']
+        disgust = emotions['emotion']['disgust']
+        fear = emotions['emotion']['fear']
+        joy = emotions['emotion']['joy']
+        sadness = emotions['emotion']['sadness']
+        emotions_dict = {
+            'anger': anger,
+            'disgust': disgust,
+            'fear': fear,
+            'joy': joy,
+            'sadness': sadness
+        }
+        max_tmp = max(emotions_dict, key=emotions_dict.get)
+        emotions_dict['dominant_emotion'] = max_tmp
+    
     return emotions_dict
